@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { DatabaseModels } from './database/migrations/database.models';
+import { DatabaseModels } from './database/database.models';
 import { HelloWorldController } from './modules/hello-world/hello-world.controller';
 import { HelloWorldService } from './modules/hello-world/hello-world.service';
 
