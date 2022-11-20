@@ -10,10 +10,10 @@ module.exports = {
         primaryKey: true,
         unique: true,
       },
-      date_of_bite: {
-        type: Sequelize.DATE,
-        allowNull: false,
-      },
+      // date_of_bite: {
+      //   type: Sequelize.DATE,
+      //   allowNull: false,
+      // },
       breed: {
         type: Sequelize.STRING,
         allowNull: true,
@@ -28,7 +28,7 @@ module.exports = {
       },
       is_spayed: {
         type: Sequelize.BOOLEAN,
-        allowNull: false,
+        allowNull: true,
       },
       borough: {
         type: Sequelize.STRING,
@@ -36,14 +36,6 @@ module.exports = {
       },
       zip_code: {
         type: Sequelize.STRING,
-        allowNull: true,
-      },
-      created_at: {
-        type: Sequelize.DATE,
-        allowNull: false,
-      },
-      updated_at: {
-        type: Sequelize.DATE,
         allowNull: true,
       },
     });

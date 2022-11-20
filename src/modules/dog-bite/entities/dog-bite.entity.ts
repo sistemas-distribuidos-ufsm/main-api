@@ -2,10 +2,8 @@ import { Table, Column, Model, DataType } from 'sequelize-typescript';
 
 @Table({
   tableName: 'DogBite',
-  timestamps: true,
+  timestamps: false,
   underscored: true,
-  createdAt: 'created_at',
-  updatedAt: 'updated_at',
 })
 export class DogBite extends Model<DogBite> {
   @Column({
@@ -16,11 +14,11 @@ export class DogBite extends Model<DogBite> {
   })
   id: number;
 
-  @Column({
-    type: DataType.DATE,
-    allowNull: false,
-  })
-  dateOfBite: string;
+  // @Column({
+  //   type: DataType.DATE,
+  //   allowNull: false,
+  // })
+  // dateOfBite: string;
 
   @Column({
     type: DataType.STRING,
@@ -42,7 +40,7 @@ export class DogBite extends Model<DogBite> {
 
   @Column({
     type: DataType.BOOLEAN,
-    allowNull: false,
+    allowNull: true,
   })
   isSpayed: boolean;
 
