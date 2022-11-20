@@ -1,7 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { HelloWorldController } from './modules/hello-world/hello-world.controller';
-import { HelloWorldService } from './modules/hello-world/hello-world.service';
+import { SequelizeModule } from '@nestjs/sequelize';
+import { DatabaseModels } from './database/database.models';
+import { HelloWorldModule } from './modules/hello-world/hello-world.module';
+import { DatabaseModule } from './database/database.module';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require('dotenv').config();
 
 @Module({
   imports: [
@@ -9,8 +13,19 @@ import { HelloWorldService } from './modules/hello-world/hello-world.service';
       envFilePath: ['.env'],
       isGlobal: true,
     }),
+    SequelizeModule.forRoot({
+      dialect: 'postgres',
+      host: process.env.DB_HOST,
+      port: parseInt(process.env.DB_PORT, 10),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      models: [...DatabaseModels],
+    }),
+    DatabaseModule,
+    HelloWorldModule,
   ],
-  controllers: [HelloWorldController],
-  providers: [HelloWorldService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
