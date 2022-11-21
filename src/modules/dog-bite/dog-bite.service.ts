@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateDogBiteDto } from './dto/create-dog-bite.dto';
+import { UpdateDogBiteDto } from './dto/update-dog-bite.dto';
 import { DogBite } from './entities/dog-bite.entity';
 
 @Injectable()
@@ -23,7 +24,7 @@ export class DogBiteService {
 
   async findAll(): Promise<DogBite[]> {
     try {
-      const dogBites = await this.dogBiteModel.findAll();
+      const dogBites: DogBite[] = await this.dogBiteModel.findAll();
 
       return dogBites;
     } catch (error) {
@@ -33,7 +34,7 @@ export class DogBiteService {
 
   async findById(id: number): Promise<DogBite> {
     try {
-      const dogBite = await this.dogBiteModel.findByPk(id);
+      const dogBite: DogBite = await this.dogBiteModel.findByPk(id);
 
       if (!dogBite) {
         throw new NotFoundException('Dog bite not found');
@@ -45,9 +46,31 @@ export class DogBiteService {
     }
   }
 
-  async delete(id: number): Promise<DogBite> {
+  async delete(id: number): Promise<void> {
     try {
-      console.log('WIP');
+      const dogBite: DogBite = await this.dogBiteModel.findByPk(id);
+
+      if (!dogBite) {
+        throw new NotFoundException('Dog bite not found');
+      }
+
+      await dogBite.destroy();
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  async update(id: number, data: UpdateDogBiteDto): Promise<void> {
+    try {
+      const dogBite: DogBite = await this.dogBiteModel.findByPk(id);
+
+      if (!dogBite) {
+        throw new NotFoundException('Dog bite not found');
+      }
+
+      await this.dogBiteModel.update(data, {
+        where: { id },
+      });
     } catch (error) {
       throw new BadRequestException(error.message);
     }
