@@ -1,3 +1,3 @@
-import { HelloWorld } from 'src/modules/hello-world/entities/hello-world.entity';
+import { DogBite } from 'src/modules/dog-bite/entities/dog-bite.entity';
 
-export const DatabaseModels = [HelloWorld];
+export const DatabaseModels = [DogBite];
