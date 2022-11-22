@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
+import { FiltersDto } from '../utils/filters.dto';
 import { CreateDogBiteDto } from './dto/create-dog-bite.dto';
 import { UpdateDogBiteDto } from './dto/update-dog-bite.dto';
 import { DogBite } from './entities/dog-bite.entity';
@@ -22,9 +23,14 @@ export class DogBiteService {
     }
   }
 
-  async findAll(): Promise<DogBite[]> {
+  async findAll(filters: FiltersDto): Promise<DogBite[]> {
     try {
-      const dogBites: DogBite[] = await this.dogBiteModel.findAll();
+      const { limit, offset } = filters;
+
+      const dogBites: DogBite[] = await this.dogBiteModel.findAll({
+        limit: limit,
+        offset: offset,
+      });
 
       return dogBites;
     } catch (error) {

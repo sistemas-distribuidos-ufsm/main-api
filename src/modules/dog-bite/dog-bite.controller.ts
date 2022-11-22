@@ -6,8 +6,10 @@ import {
   Param,
   Post,
   Put,
+  Headers,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { FiltersDto } from '../utils/filters.dto';
 import { DogBiteService } from './dog-bite.service';
 import { CreateDogBiteDto } from './dto/create-dog-bite.dto';
 import { UpdateDogBiteDto } from './dto/update-dog-bite.dto';
@@ -23,8 +25,8 @@ export class DogBiteController {
   }
 
   @Get()
-  async findAll(): Promise<DogBite[]> {
-    return this.dogBiteService.findAll();
+  async findAll(@Headers() filters: FiltersDto): Promise<DogBite[]> {
+    return this.dogBiteService.findAll(filters);
   }
 
   @Get(':id')
