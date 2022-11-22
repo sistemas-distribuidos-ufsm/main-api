@@ -14,11 +14,11 @@ export class DogBite extends Model<DogBite> {
   })
   id: number;
 
-  // @Column({
-  //   type: DataType.DATE,
-  //   allowNull: false,
-  // })
-  // dateOfBite: string;
+  @Column({
+    type: DataType.DATE,
+    allowNull: false,
+  })
+  dateOfBite: Date;
 
   @Column({
     type: DataType.STRING,

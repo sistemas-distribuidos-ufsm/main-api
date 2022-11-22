@@ -10,10 +10,10 @@ module.exports = {
         primaryKey: true,
         unique: true,
       },
-      // date_of_bite: {
-      //   type: Sequelize.DATE,
-      //   allowNull: false,
-      // },
+      date_of_bite: {
+        type: Sequelize.DATE,
+        allowNull: false,
+      },
       breed: {
         type: Sequelize.STRING,
         allowNull: true,

@@ -4,8 +4,8 @@ const isRequired = { required: true };
 const isOptional = { required: false };
 
 export class CreateDogBiteDto {
-  // @ApiProperty(isRequired)
-  // dateOfBite: Date;
+  @ApiProperty(isRequired)
+  dateOfBite: Date;
 
   @ApiProperty(isOptional)
   breed: string;
