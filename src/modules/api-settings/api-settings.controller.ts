@@ -7,8 +7,13 @@ import { ApiSettingsService } from './api-settings.service';
 export class ApiSettingsController {
   constructor(private readonly apiSettingsService: ApiSettingsService) {}
 
-  @Get('check-status')
-  async checkStatus(): Promise<any> {
+  @Get('status')
+  async checkStatus(): Promise<string> {
+    return 'Ok';
+  }
+
+  @Get('check-apis-status')
+  async checkAllApisStatus(): Promise<any> {
     return this.apiSettingsService.getStatus();
   }
 }
