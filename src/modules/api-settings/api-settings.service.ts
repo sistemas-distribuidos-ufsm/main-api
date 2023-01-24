@@ -14,7 +14,7 @@ export class ApiSettingsService {
 
   constructor(private readonly httpService: HttpService) {}
 
-  async getStatus(): Promise<any> {
+  async checkAllApisStatus(): Promise<any> {
     const responses = [];
 
     for (const url of this.API_URLS) {

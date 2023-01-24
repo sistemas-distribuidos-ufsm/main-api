@@ -14,6 +14,6 @@ export class ApiSettingsController {
 
   @Get('check-apis-status')
   async checkAllApisStatus(): Promise<any> {
-    return this.apiSettingsService.getStatus();
+    return this.apiSettingsService.checkAllApisStatus();
   }
 }
