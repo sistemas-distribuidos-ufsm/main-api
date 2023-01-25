@@ -1,9 +1,12 @@
+import { HttpService } from '@nestjs/axios';
 import {
   BadRequestException,
+  HttpException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
+import { map } from 'rxjs/operators';
 import { FiltersDto } from '../utils/filters.dto';
 import { CreateDogBiteDto } from './dto/create-dog-bite.dto';
 import { UpdateDogBiteDto } from './dto/update-dog-bite.dto';
@@ -11,16 +14,55 @@ import { DogBite } from './entities/dog-bite.entity';
 
 @Injectable()
 export class DogBiteService {
-  constructor(@InjectModel(DogBite) private dogBiteModel: typeof DogBite) {}
+  private currentApiIndex: number = 0;
+  private HTTP_STATUS_OK: number = 200;
+  private HTTP_STATUS_BAD_REQUEST: number = 400;
+  private MAX_RETRIES: number = 4;
+  private TIME_BETWEEN_FAIL: number = 3000;
+  private MAXIMUM_RETRIES_MESSAGE: string = 'Maximum retries achieved';
+  private readonly apiList: string[] = [
+    'http://localhost:3001',
+    'http://localhost:3002',
+    'http://localhost:3003',
+    'http://localhost:3004',
+  ];
 
-  async create(data: CreateDogBiteDto): Promise<DogBite> {
-    try {
-      const dogBite = await this.dogBiteModel.create(data);
+  constructor(
+    private readonly httpService: HttpService,
+    @InjectModel(DogBite) private dogBiteModel: typeof DogBite,
+  ) {}
 
-      return dogBite;
-    } catch (error) {
-      throw new BadRequestException(error.message);
+  async create(data: CreateDogBiteDto): Promise<any> {
+    let request = null;
+    let apiUrl: string = null;
+    let isDone: boolean = false;
+    let retries: number = 0;
+
+    while (!isDone) {
+      if (retries === this.MAX_RETRIES) {
+        throw new HttpException(
+          {
+            message: this.MAXIMUM_RETRIES_MESSAGE,
+            status: this.HTTP_STATUS_BAD_REQUEST,
+          },
+          this.HTTP_STATUS_BAD_REQUEST,
+        );
+      }
+
+      apiUrl = `${this.updateQueue()}/dog-bite`;
+      request = await this.createDogBite(data, apiUrl);
+
+      if (request?.status === this.HTTP_STATUS_OK) {
+        isDone = true;
+      } else {
+        retries += 1;
+        await new Promise((resolve) =>
+          setTimeout(resolve, this.TIME_BETWEEN_FAIL),
+        );
+      }
     }
+
+    return request;
   }
 
   async findAll(filters: FiltersDto): Promise<DogBite[]> {
@@ -79,6 +121,40 @@ export class DogBiteService {
       });
     } catch (error) {
       throw new BadRequestException(error.message);
+    }
+  }
+
+  private updateQueue(): string {
+    const apiUrl = this.apiList[this.currentApiIndex];
+    this.currentApiIndex = (this.currentApiIndex + 1) % this.apiList.length;
+
+    return apiUrl;
+  }
+
+  private async createDogBite(
+    data: CreateDogBiteDto,
+    url: string,
+  ): Promise<any> {
+    console.log(`URL: ${url}`);
+    const request = this.httpService.post(url, data).pipe(
+      map((response) => {
+        return {
+          status: response?.status,
+          data: response?.data,
+        };
+      }),
+    );
+
+    try {
+      const response = await request.toPromise();
+
+      return response;
+    } catch (error) {
+      return {
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message,
+      };
     }
   }
 }
