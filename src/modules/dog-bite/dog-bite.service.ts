@@ -6,8 +6,8 @@ import {
 import { InjectModel } from '@nestjs/sequelize';
 import { map } from 'rxjs/operators';
 import { FiltersDto } from '../utils/filters.dto';
+import { CompleteDogBiteDto } from './dto/complete-dog-bite.dto';
 import { CreateDogBiteDto } from './dto/create-dog-bite.dto';
-import { UpdateDogBiteDto } from './dto/update-dog-bite.dto';
 import { DogBite } from './entities/dog-bite.entity';
 
 @Injectable()
@@ -163,7 +163,7 @@ export class DogBiteService {
     return request;
   }
 
-  async update(id: number, data: UpdateDogBiteDto): Promise<void> {
+  async update(data: CompleteDogBiteDto): Promise<void> {
     let request = null;
     let apiUrl: string = null;
     let isDone: boolean = false;
@@ -180,7 +180,7 @@ export class DogBiteService {
         );
       }
 
-      apiUrl = `${this.updateQueue()}/dog-bite/${id}`;
+      apiUrl = `${this.updateQueue()}/dog-bite`;
       request = await this.updateDogBite(data, apiUrl);
 
       if (request?.status === this.HTTP_STATUS_OK) {
@@ -315,7 +315,7 @@ export class DogBiteService {
   }
   
   private async updateDogBite(
-    data: UpdateDogBiteDto,
+    data: CompleteDogBiteDto,
     url: string,
   ): Promise<any> {
     console.log(`URL: ${url}`);

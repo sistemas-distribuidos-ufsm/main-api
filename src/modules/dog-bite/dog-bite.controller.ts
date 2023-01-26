@@ -11,8 +11,8 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { FiltersDto } from '../utils/filters.dto';
 import { DogBiteService } from './dog-bite.service';
+import { CompleteDogBiteDto } from './dto/complete-dog-bite.dto';
 import { CreateDogBiteDto } from './dto/create-dog-bite.dto';
-import { UpdateDogBiteDto } from './dto/update-dog-bite.dto';
 import { DogBite } from './entities/dog-bite.entity';
 
 @ApiTags('DogBiteController')
@@ -35,25 +35,26 @@ export class DogBiteController {
 
   @Get(':id')
   async findById(@Param('id') id: number): Promise<DogBite> {
-    console.log(`[LOGGER] TYPE: GET | METHOD: FIND-BY-ID | CONTROLLER: DOG-BITE`);
+    console.log(
+      `[LOGGER] TYPE: GET | METHOD: FIND-BY-ID | CONTROLLER: DOG-BITE`,
+    );
 
     return await this.dogBiteService.findById(id);
   }
 
   @Delete(':id')
   async delete(@Param('id') id: number): Promise<void> {
-    console.log(`[LOGGER] TYPE: DELETE | METHOD: DELETE | CONTROLLER: DOG-BITE`);
+    console.log(
+      `[LOGGER] TYPE: DELETE | METHOD: DELETE | CONTROLLER: DOG-BITE`,
+    );
 
     return await this.dogBiteService.delete(id);
   }
 
-  @Put(':id')
-  async update(
-    @Param('id') id: number,
-    @Body() data: UpdateDogBiteDto,
-  ): Promise<void> {
+  @Put()
+  async update(@Body() data: CompleteDogBiteDto): Promise<void> {
     console.log(`[LOGGER] TYPE: PUT | METHOD: UPDATE | CONTROLLER: DOG-BITE`);
 
-    return await this.dogBiteService.update(id, data);
+    return await this.dogBiteService.update(data);
   }
 }
