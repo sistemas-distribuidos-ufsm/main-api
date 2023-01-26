@@ -14,6 +14,7 @@ import { DogBite } from './entities/dog-bite.entity';
 export class DogBiteService {
   private currentApiIndex: number = 0;
   private HTTP_STATUS_OK: number = 200;
+  private HTTP_STATUS_CREATED: number = 201;
   private HTTP_STATUS_BAD_REQUEST: number = 400;
   private MAX_RETRIES: number = 4;
   private TIME_BETWEEN_FAIL: number = 3000;
@@ -50,7 +51,7 @@ export class DogBiteService {
       apiUrl = `${this.updateQueue()}/dog-bite`;
       request = await this.createDogBite(data, apiUrl);
 
-      if (request?.status === this.HTTP_STATUS_OK) {
+      if (request?.status === this.HTTP_STATUS_CREATED) {
         isDone = true;
       } else {
         retries += 1;
