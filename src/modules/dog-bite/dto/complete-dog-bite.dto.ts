@@ -3,7 +3,10 @@ import { ApiProperty } from '@nestjs/swagger';
 const isRequired = { required: true };
 const isOptional = { required: false };
 
-export class UpdateDogBiteDto {
+export class CompleteDogBiteDto {
+  @ApiProperty(isRequired)
+  id: number;
+
   @ApiProperty(isRequired)
   dateOfBite: Date;
 
