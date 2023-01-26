@@ -65,19 +65,37 @@ export class DogBiteService {
     return request;
   }
 
-  async findAll(filters: FiltersDto): Promise<DogBite[]> {
-    try {
-      const { limit, offset } = filters;
+  async findAll(filters: FiltersDto): Promise<any> {
+    let request = null;
+    let apiUrl: string = null;
+    let isDone: boolean = false;
+    let retries: number = 0;
 
-      const dogBites: DogBite[] = await this.dogBiteModel.findAll({
-        limit: limit,
-        offset: offset,
-      });
+    while (!isDone) {
+      if (retries === this.MAX_RETRIES) {
+        throw new HttpException(
+          {
+            message: this.MAXIMUM_RETRIES_MESSAGE,
+            status: this.HTTP_STATUS_BAD_REQUEST,
+          },
+          this.HTTP_STATUS_BAD_REQUEST,
+        );
+      }
 
-      return dogBites;
-    } catch (error) {
-      throw new BadRequestException(error.message);
+      apiUrl = `${this.updateQueue()}/dog-bite`;
+      request = await this.findAllDogBites(filters, apiUrl);
+
+      if (request?.status === this.HTTP_STATUS_OK) {
+        isDone = true;
+      } else {
+        retries += 1;
+        await new Promise((resolve) =>
+          setTimeout(resolve, this.TIME_BETWEEN_FAIL),
+        );
+      }
     }
+
+    return request;
   }
 
   async findById(id: number): Promise<DogBite> {
@@ -136,7 +154,41 @@ export class DogBiteService {
     url: string,
   ): Promise<any> {
     console.log(`URL: ${url}`);
+
     const request = this.httpService.post(url, data).pipe(
+      map((response) => {
+        return {
+          status: response?.status,
+          data: response?.data,
+        };
+      }),
+    );
+
+    try {
+      const response = await request.toPromise();
+
+      return response;
+    } catch (error) {
+      return {
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message,
+      };
+    }
+  }
+
+  private async findAllDogBites(
+    filters: FiltersDto,
+    url: string,
+  ): Promise<any> {
+    console.log(`URL: ${url}`);
+
+    const headers = {
+      limit: filters.limit,
+      offset: filters.offset,
+    };
+
+    const request = this.httpService.get(url, { headers }).pipe(
       map((response) => {
         return {
           status: response?.status,
