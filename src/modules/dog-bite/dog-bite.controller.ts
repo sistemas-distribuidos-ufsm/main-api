@@ -22,17 +22,22 @@ export class DogBiteController {
   @Post()
   async create(@Body() data: CreateDogBiteDto): Promise<DogBite> {
     console.log(`[LOGGER] TYPE: POST | METHOD: CREATE | CONTROLLER: DOG-BITE`);
+
     return await this.dogBiteService.create(data);
   }
 
   @Get()
   async findAll(@Headers() filters: FiltersDto): Promise<DogBite[]> {
-    return this.dogBiteService.findAll(filters);
+    console.log(`[LOGGER] TYPE: GET | METHOD: FIND-ALL | CONTROLLER: DOG-BITE`);
+
+    return await this.dogBiteService.findAll(filters);
   }
 
   @Get(':id')
   async findById(@Param('id') id: number): Promise<DogBite> {
-    return this.dogBiteService.findById(id);
+    console.log(`[LOGGER] TYPE: GET | METHOD: FIND-BY-ID | CONTROLLER: DOG-BITE`);
+
+    return await this.dogBiteService.findById(id);
   }
 
   @Delete(':id')

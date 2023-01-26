@@ -99,17 +99,36 @@ export class DogBiteService {
   }
 
   async findById(id: number): Promise<DogBite> {
-    try {
-      const dogBite: DogBite = await this.dogBiteModel.findByPk(id);
+    let request = null;
+    let apiUrl: string = null;
+    let isDone: boolean = false;
+    let retries: number = 0;
 
-      if (!dogBite) {
-        throw new NotFoundException('Dog bite not found');
+    while (!isDone) {
+      if (retries === this.MAX_RETRIES) {
+        throw new HttpException(
+          {
+            message: this.MAXIMUM_RETRIES_MESSAGE,
+            status: this.HTTP_STATUS_BAD_REQUEST,
+          },
+          this.HTTP_STATUS_BAD_REQUEST,
+        );
       }
 
-      return dogBite;
-    } catch (error) {
-      throw new BadRequestException(error.message);
+      apiUrl = `${this.updateQueue()}/dog-bite/${id}`;
+      request = await this.findDogBite(apiUrl);
+
+      if (request?.status === this.HTTP_STATUS_OK) {
+        isDone = true;
+      } else {
+        retries += 1;
+        await new Promise((resolve) =>
+          setTimeout(resolve, this.TIME_BETWEEN_FAIL),
+        );
+      }
     }
+
+    return request;
   }
 
   async delete(id: number): Promise<void> {
@@ -189,6 +208,31 @@ export class DogBiteService {
     };
 
     const request = this.httpService.get(url, { headers }).pipe(
+      map((response) => {
+        return {
+          status: response?.status,
+          data: response?.data,
+        };
+      }),
+    );
+
+    try {
+      const response = await request.toPromise();
+
+      return response;
+    } catch (error) {
+      return {
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message,
+      };
+    }
+  }
+
+  private async findDogBite(url: string): Promise<any> {
+    console.log(`URL: ${url}`);
+
+    const request = this.httpService.get(url).pipe(
       map((response) => {
         return {
           status: response?.status,
