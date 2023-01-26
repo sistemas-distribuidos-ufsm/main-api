@@ -52,6 +52,8 @@ export class DogBiteController {
     @Param('id') id: number,
     @Body() data: UpdateDogBiteDto,
   ): Promise<void> {
-    return this.dogBiteService.update(id, data);
+    console.log(`[LOGGER] TYPE: PUT | METHOD: UPDATE | CONTROLLER: DOG-BITE`);
+
+    return await this.dogBiteService.update(id, data);
   }
 }
