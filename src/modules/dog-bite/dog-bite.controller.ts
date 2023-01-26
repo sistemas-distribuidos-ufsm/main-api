@@ -42,7 +42,9 @@ export class DogBiteController {
 
   @Delete(':id')
   async delete(@Param('id') id: number): Promise<void> {
-    return this.dogBiteService.delete(id);
+    console.log(`[LOGGER] TYPE: DELETE | METHOD: DELETE | CONTROLLER: DOG-BITE`);
+
+    return await this.dogBiteService.delete(id);
   }
 
   @Put(':id')
